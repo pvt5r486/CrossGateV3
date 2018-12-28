@@ -1,0 +1,68 @@
+@import '~bootstrap/scss/functions';  //bootstrap4 套用變數的方法
+@import './helpers/_variables';       //自訂的 bootstrap4變數
+@import '~bootstrap/scss/bootstrap';  //引用bootstrap4 scss
+@import './helpers/_swiper'; 
+//自己寫的scss
+@import './_mytool';
+@import './_layout';
+@import './_login';
+@import './_dashboard';
+@import './_shoppingdemo';
+@import './about';
+@import './prodcard';
+@import './gamehost';
+@import './crossgate';
+@import './prodDetail';
+@import './shopCart';
+
+//全域設定
+html,body {
+  font-family: 'Microsoft JhengHei';
+}
+
+ul{
+  list-style: none;
+  padding-left: 0;
+}
+
+a:hover{
+  text-decoration: none;
+}
+
+.back-background{
+  background-color: #EAF0ED;
+}
+
+.fixheight{
+  min-height:calc(100vh - 66px);
+}
+
+.message-alert {
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  z-index: 1100;
+  transform: translateY(50%);
+  transition: all .3s;
+  &.active{
+    transform: translateY(0%);
+  }
+}
+
+.alert-rounded{
+  border-radius: 50px;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 2px lighten($main, 40%);
+  border:1px solid $main;
+}
+
+.btn:focus, .btn.focus,.btn,
+.btn:not(:disabled):not(.disabled):active:focus, 
+.btn:not(:disabled):not(.disabled).active:focus,
+.page-link:focus{
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}

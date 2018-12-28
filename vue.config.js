@@ -1,3 +1,9 @@
 module.exports = {
-  baseUrl: '/CrossGate/dist/'
+  baseUrl: '/CrossGateV3/dist/',
+  outputDir: undefined,
+  assetsDir: undefined,
+  runtimeCompiler: undefined,
+  productionSourceMap: undefined,
+  parallel: undefined,
+  css: undefined
 }

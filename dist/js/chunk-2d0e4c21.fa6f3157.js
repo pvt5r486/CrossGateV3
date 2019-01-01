@@ -1,2 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d0e4c21"],{"921c":function(e,n,t){"use strict";t.r(n);var u=function(){var e=this,n=e.$createElement,t=e._self._c||n;return t("div",[t("router-view")],1)},c=[],o=t("2877"),i={},l=Object(o["a"])(i,u,c,!1,null,null,null);l.options.__file="gameHost.vue";n["default"]=l.exports}}]);
-//# sourceMappingURL=chunk-2d0e4c21.fa6f3157.js.map

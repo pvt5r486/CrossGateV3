@@ -1,8 +1,5 @@
 <template>
   <div class="p-3">
-    <loading :active.sync="isLoading">
-      <img src="@/assets/img/loading.gif" alt="" width="200">
-    </loading>
     <swiper :options="swiperOption" class="prodSwiper"  v-if="filterData.length > 0">
       <swiper-slide v-for="item in filterData" :key="item.id">
         <prodCard :card-data="item" :status="status" @returnProdID="addtoCart"></prodCard>
@@ -76,19 +73,18 @@ export default {
       status: {
         loadingItem: '',
         loadingIcon: false
-      },
-      isLoading: false
+      }
     }
   },
   methods: {
     getProducts () {
       const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/products/all`
       const vm = this
-      vm.isLoading = true
+      vm.$store.dispatch('updateLoading', true)
       this.$http.get(api).then(response => {
         if (response.data.success) {
           vm.products = response.data.products
-          vm.isLoading = false
+          vm.$store.dispatch('updateLoading', false)
         }
       })
     },

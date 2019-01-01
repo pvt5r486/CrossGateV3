@@ -1,8 +1,5 @@
 <template>
   <div>
-    <loading :active.sync="isLoading">
-      <img src="@/assets/img/loading.gif" alt="" width="200">
-    </loading>
     <div class="table-responsive my-3" v-if="orders.length != 0">
       <table class="table table-hover">
         <thead class="table-becare">
@@ -217,7 +214,6 @@ export default {
     return {
       orders: [],
       pagination: {},
-      isLoading: false,
       tempOrder: {
         user: {},
         products: {}
@@ -243,11 +239,11 @@ export default {
     getOrders (page = 1) {
       const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/orders?page=${page}`
       const vm = this
-      vm.isLoading = true
+      vm.$store.dispatch('updateLoading', true)
       this.$http.get(api).then(response => {
         vm.orders = response.data.orders
         vm.pagination = response.data.pagination
-        vm.isLoading = false
+        vm.$store.dispatch('updateLoading', false)
       })
     },
     deleteOrder () {

@@ -25,7 +25,7 @@ export default new Router({
         {
           name: '關於我們',
           path: 'index',
-          component: () => import('@/views/about')
+          component: () => import('@/views/About')
         },
         {
           path: 'gamehost',
@@ -80,12 +80,10 @@ export default new Router({
         }
       ]
     },
-    // 登入頁
     {
       path: '/login',
       component: () => import('@/views/login')
     },
-    // 後台
     {
       path: '/admin',
       redirect: '/login',
@@ -106,16 +104,6 @@ export default new Router({
         {
           path: 'coupon',
           component: () => import('@/views/coupon'),
-          meta: { requiresAuth: true }
-        },
-        {
-          path: 'shopping-demo',
-          component: () => import('@/views/shoppingdemo'),
-          meta: { requiresAuth: true }
-        },
-        {
-          path: 'orderCheckout/:orderID',
-          component: () => import('@/views/orderCheckout'),
           meta: { requiresAuth: true }
         }
       ]

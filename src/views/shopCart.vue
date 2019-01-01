@@ -1,8 +1,5 @@
 <template>
   <div>
-    <loading :active.sync="isLoading">
-      <img src="@/assets/img/loading.gif" alt="" width="200">
-    </loading>
     <div v-if="shopCart.carts && shopCart.carts.length != 0" class="container" style="min-height:calc(100vh - 85px - 213.88px - 66px)">
       <div class="row">
         <div class="col-md-8">
@@ -124,7 +121,6 @@ export default {
   data () {
     return {
       shopCart: {},
-      isLoading: false,
       status: {
         loadingItem: '',
         loadingIcon: false
@@ -146,10 +142,10 @@ export default {
     getCart () {
       const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`
       const vm = this
-      vm.isLoading = true
+      vm.$store.dispatch('updateLoading', true)
       this.$http.get(api).then(response => {
         vm.shopCart = response.data.data
-        vm.isLoading = false
+        vm.$store.dispatch('updateLoading', false)
         vm.status.loadingItem = ''
       })
     },
@@ -193,7 +189,7 @@ export default {
       const order = vm.form
       this.$validator.validate().then((result) => {
         if (result) {
-          vm.isLoading = true
+          vm.$store.dispatch('updateLoading', true)
           this.$http.post(api, { data: order }).then(response => {
             if (response.data.success) {
               vm.$bus.$emit('shopCart:update')
@@ -202,7 +198,7 @@ export default {
             } else {
               vm.$bus.$emit('message:push', `${response.data.message}`, 'danger')
             }
-            vm.isLoading = false
+            vm.$store.dispatch('updateLoading', false)
             vm.getCart()
           })
         } else {

@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import Vuex from 'vuex'
 // 引用 第三方 套件
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -12,6 +13,7 @@ import $ from 'jquery'
 // 引用自定
 import App from './App.vue'
 import router from './router'
+import store from './store'
 import './bus'
 import currencyFilter from './filters/currency'
 import timeTampsFilter from './filters/timetamps'
@@ -21,6 +23,7 @@ import modal from '@/components/modal'
 
 Vue.config.productionTip = false
 Vue.use(VueAxios, axios)
+Vue.use(Vuex)
 axios.defaults.withCredentials = true
 Vue.use(VeeValidate, { events: 'change' })
 VeeValidate.Validator.localize('zh_TW', zhTWValidate)
@@ -35,6 +38,7 @@ Vue.filter('category', categoryClassNameFilter)
 
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')
 

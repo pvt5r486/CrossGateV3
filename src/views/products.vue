@@ -1,8 +1,5 @@
 <template>
   <div>
-    <loading :active.sync="isLoading">
-    <img src="@/assets/img/loading.gif" alt="" width="200">
-    </loading>
     <div class="mt-3 d-flex">
       <button class="btn btn-outline-success btn-sm d-flex align-items-center ml-auto" @click="openModal(true)">
         <i class="material-icons">add</i>建立新的產品
@@ -145,7 +142,6 @@ export default {
       pagination: {},
       tempProduct: {},
       isNew: false,
-      isLoading: false,
       status: {
         fileuploading: false,
         loading: false
@@ -156,11 +152,11 @@ export default {
     getProducts (page = 1) {
       const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/admin/products?page=${page}`
       const vm = this
-      vm.isLoading = true
+      vm.$store.dispatch('updateLoading', true)
       this.$http.get(api).then(response => {
         if (response.data.success) {
           vm.products = response.data.products
-          vm.isLoading = false
+          vm.$store.dispatch('updateLoading', false)
           vm.pagination = response.data.pagination
         } else {
           vm.$bus.$emit('message:push', response.data.message, 'danger')

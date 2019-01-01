@@ -1,8 +1,5 @@
 <template>
   <div class="back-background">
-    <loading :active.sync="isLoading">
-      <img src="@/assets/img/loading.gif" alt="" width="200">
-    </loading>
     <alertMessage></alertMessage>
     <div class="container d-flex flex-column justify-content-center" id="container">
       <div class="row no-gutters justify-content-center">
@@ -57,23 +54,22 @@ export default {
         username: '',
         password: '',
         isRemember: false
-      },
-      isLoading: false
+      }
     }
   },
   methods: {
     signin () {
       const api = `${process.env.VUE_APP_APIPATH}/admin/signin`
       const vm = this
-      vm.isLoading = true
+      vm.$store.dispatch('updateLoading', true)
       localStorage.setItem('isRemember', vm.user.isRemember)
       vm.user.isRemember ? localStorage.setItem('userAccount', vm.user.username) : localStorage.removeItem('userAccount')
       this.$http.post(api, vm.user).then(response => {
         if (response.data.success) {
-          vm.isLoading = false
+          vm.$store.dispatch('updateLoading', false)
           vm.$router.push('/admin/products')
         } else {
-          vm.isLoading = false
+          vm.$store.dispatch('updateLoading', false)
           vm.$bus.$emit('message:push', `${response.data.message}，請確認您的帳號密碼。`, 'danger')
         }
       })

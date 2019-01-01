@@ -24,11 +24,6 @@
               <i class="fas fa-ticket-alt mr-1"></i>優惠券
             </router-link>
           </li>
-          <li class="nav-item">
-            <router-link to="/admin/shopping-demo" class="nav-link" activeClass="active" @click.native="closeNavbar">
-              <i class="fas fa-shopping-cart mr-1"></i>模擬購物
-            </router-link>
-          </li>
         </ul>
         <a href="#" class="nav-link pl-0 pl-md-3 text-dontcare" @click.prevent="signout">
           <i class="fas fa-sign-out-alt mr-1"></i>登出

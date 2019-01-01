@@ -1,8 +1,5 @@
 <template>
   <div>
-    <loading :active.sync="isLoading">
-      <img src="@/assets/img/loading.gif" alt="" width="200">
-    </loading>
     <div class="mt-3 d-flex">
       <button class="btn btn-outline-success btn-sm d-flex align-items-center ml-auto" @click="openModal(true)">
         <i class="material-icons">add</i>建立優惠券
@@ -103,7 +100,6 @@ export default {
       pagination: {},
       tempCoupon: {},
       isNew: false,
-      isLoading: false,
       status: {
         loading: false
       }
@@ -113,12 +109,11 @@ export default {
     getCoupons (page = 1) {
       const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/admin/coupons?page=${page}`
       const vm = this
-      vm.isLoading = true
+      vm.$store.dispatch('updateLoading', true)
       this.$http.get(api).then(response => {
         if (response.data.success) {
           vm.coupons = response.data.coupons
-          // console.log(response.data)
-          vm.isLoading = false
+          vm.$store.dispatch('updateLoading', false)
           vm.pagination = response.data.pagination
         } else {
           vm.$bus.$emit('message:push', response.data.message, 'danger')

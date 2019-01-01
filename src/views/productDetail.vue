@@ -1,8 +1,5 @@
 <template>
   <div class="container">
-    <loading :active.sync="isLoading">
-      <img src="@/assets/img/loading.gif" alt="" width="200">
-    </loading>
     <div class="row no-gutters" v-if="product.id">
       <div class="col-md-8">
         <div class="prodImg">
@@ -67,19 +64,18 @@ export default {
       product: {},
       status: {
         loadingIcon: false
-      },
-      isLoading: false
+      }
     }
   },
   methods: {
     getProduct (id) {
       const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/product/${id}`
       const vm = this
-      vm.isLoading = true
+      vm.$store.dispatch('updateLoading', true)
       this.$http.get(api).then(response => {
         vm.product = response.data.product
         vm.$set(vm.product, 'buyNum', 1)
-        vm.isLoading = false
+        vm.$store.dispatch('updateLoading', false)
       })
     },
     addtoCart (id, qty = 1) {

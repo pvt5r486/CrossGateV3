@@ -66,10 +66,10 @@ export default {
       const vm = this
       this.$validator.validate().then((result) => {
         if (result) {
-          vm.$bus.$emit('message:push', `感謝 ${vm.tempEmail} 的訂閱 :D`, 'success')
+          vm.$store.dispatch('alertModules/updateMessage', { message: `感謝 ${vm.tempEmail} 的訂閱 :D`, status: 'success' }, { root: true })
           vm.tempEmail = ''
         } else {
-          vm.$bus.$emit('message:push', `噢！Email欄位怪怪的哦`, 'danger')
+          vm.$store.dispatch('alertModules/updateMessage', { message: `噢！Email欄位怪怪的哦` }, { root: true })
           $('#useremail').focus()
         }
       })

@@ -13,13 +13,13 @@
             <del>原價 {{product.origin_price | currency}}</del>
             <h4>特價 {{product.price | currency}}</h4>
           </div>
-          <select class="form-control mb-3" v-model="product.buyNum">
+          <select class="form-control mb-3" v-model="buyNum">
             <option :value="num" v-for="num in 10" :key="num" >
               選購 {{num}} {{product.unit}}
             </option>
           </select>
-          <p class="text-right text-main font-weight-bold mb-1">小計 {{product.buyNum * product.price | currency}}</p>
-          <button type="button" class="addTocardBtn" @click="addtoCart(product.id,product.buyNum)" :disabled="status.loadingIcon" >
+          <p class="text-right text-main font-weight-bold mb-1">小計 {{buyNum * product.price | currency}}</p>
+          <button type="button" class="addTocardBtn" @click="addtoCart(product.id,buyNum)" :disabled="status.loadingIcon" >
             <i class="fas fa-spinner fa-spin mr-1" v-if="status.loadingIcon"></i>放入購物車
           </button>
         </div>
@@ -54,6 +54,7 @@
 
 <script>
 import prodSilder from '@/components/prodsilder'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     prodSilder
@@ -61,7 +62,7 @@ export default {
   data () {
     return {
       productID: '',
-      product: {},
+      buyNum: 1,
       status: {
         loadingIcon: false
       }
@@ -69,31 +70,22 @@ export default {
   },
   methods: {
     getProduct (id) {
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/product/${id}`
-      const vm = this
-      vm.$store.dispatch('updateLoading', true)
-      this.$http.get(api).then(response => {
-        vm.product = response.data.product
-        vm.$set(vm.product, 'buyNum', 1)
-        vm.$store.dispatch('updateLoading', false)
-      })
+      this.$store.dispatch('productsModules/getProduct', id)
     },
     addtoCart (id, qty = 1) {
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`
       const vm = this
-      const cart = {
-        product_id: id,
-        qty
-      }
       vm.status.loadingIcon = true
-      vm.$http.post(api, { data: cart }).then(response => {
-        if (response.data.success) {
-          vm.$bus.$emit('shopCart:update')
-          vm.$bus.$emit('message:push', `【${response.data.data.product.title}】${response.data.data.qty} ${response.data.data.product.unit} ${response.data.message}`, 'success')
-        }
-        vm.status.loadingIcon = false
-      })
+      this.$store.dispatch('cartModules/addtoCart', { id, qty })
+        .then(() => {
+          vm.status.loadingIcon = false
+        })
+        .catch(() => {
+          vm.status.loadingIcon = false
+        })
     }
+  },
+  computed: {
+    ...mapGetters('productsModules', ['product'])
   },
   created () {
     const vm = this

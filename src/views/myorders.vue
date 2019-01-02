@@ -18,6 +18,7 @@ export default {
       option: {
         delFuntion: false,
         editFunction: false,
+        gopayFunction: true,
         gopayPath: '/orderCheckout/'
       }
     }

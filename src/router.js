@@ -25,7 +25,7 @@ export default new Router({
         {
           name: '關於我們',
           path: 'index',
-          component: () => import('@/views/About')
+          component: () => import('@/views/about')
         },
         {
           path: 'gamehost',

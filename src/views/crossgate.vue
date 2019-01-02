@@ -71,6 +71,7 @@
 </template>
 <script>
 import $ from 'jquery'
+import { mapGetters, mapActions } from 'vuex'
 import topSilder from '@/components/topsilder'
 import prodCard from '@/components/prodcard'
 import prodSilder from '@/components/prodsilder'
@@ -82,7 +83,6 @@ export default {
   },
   data () {
     return {
-      products: [],
       pagination: {
         page_Size: 6,
         total_pages: 1,
@@ -91,8 +91,7 @@ export default {
         has_next: false
       },
       status: {
-        loadingItem: '',
-        loadingIcon: false
+        loadingItem: ''
       },
       prodCategory: '',
       searchFilter: '',
@@ -100,37 +99,20 @@ export default {
     }
   },
   methods: {
-    getProducts () {
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/products/all`
-      const vm = this
-      vm.$store.dispatch('updateLoading', true)
-      this.$http.get(api).then(response => {
-        if (response.data.success) {
-          vm.products = response.data.products
-          vm.$store.dispatch('updateLoading', false)
-        }
-      })
-    },
     addtoCart (id, qty = 1) {
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`
       const vm = this
       vm.status.loadingItem = id
-      const sw = document.querySelector('.swiper-container')
-      sw.swiper.autoplay.stop()
-      const cart = {
-        product_id: id,
-        qty
-      }
-      this.$http.post(api, { data: cart }).then(response => {
-        if (response.data.success) {
-          vm.$bus.$emit('shopCart:update')
+      const prodSwiper = document.querySelector('.prodSwiper')
+      prodSwiper.swiper.autoplay.stop()
+      this.$store.dispatch('cartModules/addtoCart', { id, qty })
+        .then(() => {
           vm.status.loadingItem = ''
-          sw.swiper.autoplay.start()
-          vm.$bus.$emit('message:push', `【${response.data.data.product.title}】
-            ${response.data.data.qty} ${response.data.data.product.unit} 
-            ${response.data.message}`, 'success')
-        }
-      })
+          prodSwiper.swiper.autoplay.start()
+        })
+        .catch(() => {
+          vm.status.loadingItem = ''
+          prodSwiper.swiper.autoplay.start()
+        })
     },
     getPage (page = 1) {
       const vm = this
@@ -155,7 +137,8 @@ export default {
       vm.pagination.current_page = 1
       vm.searchFilter = ''
       vm.searchResult = []
-    }
+    },
+    ...mapActions('productsModules', ['getProducts'])
   },
   created () {
     this.getProducts()
@@ -193,7 +176,8 @@ export default {
         // 資料區間
         return index < (nowPage * pageSize) && index >= (nowPage - 1) * pageSize
       })
-    }
+    },
+    ...mapGetters('productsModules', ['products'])
   }
 }
 </script>

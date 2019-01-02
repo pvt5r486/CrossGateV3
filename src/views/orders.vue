@@ -50,7 +50,7 @@
                 <span v-else>未付款</span>
               </td>
               <td>
-                <button class="btn btn-main btn-block text-nowrap" @click="gopay(option.gopayPath,item.id)" v-if="!item.is_paid">結帳</button>
+                <button class="btn btn-main btn-block text-nowrap" @click="gopay(option.gopayPath,item.id)" v-if="!item.is_paid && option.gopayFunction">結帳</button>
                 <button class="btn btn-outline-primary btn-block border-0" @click="editModal(item)" v-if="option.editFunction">編輯</button>
                 <button class="btn btn-outline-secondary btn-block border-0" v-if="!item.is_paid && option.delFuntion" @click="delModal(item)">刪除</button>
               </td>
@@ -205,7 +205,7 @@ export default {
         return {
           delFuntion: true,
           editFunction: true,
-          gopayPath: '/admin/orderCheckout/'
+          gopayPath: ''
         }
       }
     }

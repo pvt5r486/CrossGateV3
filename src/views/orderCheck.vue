@@ -118,16 +118,6 @@ export default {
   components: {
     shopCartTable
   },
-  props: {
-    option: {
-      type: Object,
-      default: function () {
-        return {
-          redirePath: '/admin/shopping-demo'
-        }
-      }
-    }
-  },
   data () {
     return {
       orderId: '',
@@ -150,8 +140,8 @@ export default {
           vm.$store.dispatch('updateLoading', false)
         } else {
           vm.$store.dispatch('updateLoading', false)
-          vm.$bus.$emit('message:push', '糟糕...沒有這筆訂單喔！', 'danger')
-          vm.$router.push(`/admin/shopping-demo`)
+          vm.$store.dispatch('alertModules/updateMessage', { message: '糟糕...沒有這筆訂單喔！' }, { root: true })
+          vm.$router.push(`/shopping`)
         }
       })
     },
@@ -162,10 +152,10 @@ export default {
       this.$http.post(api).then(response => {
         if (response.data.success) {
           if (response.data.success) {
-            vm.$bus.$emit('message:push', response.data.message, 'success')
+            vm.$store.dispatch('alertModules/updateMessage', { message: `${response.data.message}`, status: 'success' }, { root: true })
             vm.getOrder()
           } else {
-            vm.$bus.$emit('message:push', '付款失敗 :( ', 'danger')
+            vm.$store.dispatch('alertModules/updateMessage', { message: '付款失敗 :( ' }, { root: true })
           }
           vm.status.loadIcon = true
         }

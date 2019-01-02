@@ -1,6 +1,5 @@
 <template>
   <div>
-    <alertMessage></alertMessage>
     <navbarFront></navbarFront>
     <router-view></router-view>
     <footerSection></footerSection>
@@ -9,13 +8,11 @@
 
 <script>
 import navbarFront from '@/components/navbarFront'
-import alertMessage from '@/components/AlertMessage'
 import footerSection from '@/components/footer'
 
 export default {
   components: {
     navbarFront,
-    alertMessage,
     footerSection
   }
 }

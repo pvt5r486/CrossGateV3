@@ -12,45 +12,14 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   name: 'alertMessage',
-  data () {
-    return {
-      messages: []
-    }
-  },
   methods: {
-    updateMessage (message, status) {
-      const timestamp = Math.floor(new Date() / 1000)
-      this.messages.push({
-        message,
-        status,
-        timestamp
-      })
-      this.removeMessageWithTiming(timestamp)
-    },
-    removeMessage (num) {
-      this.messages.splice(num, 1)
-    },
-    removeMessageWithTiming (timestamp) {
-      const vm = this
-      setTimeout(() => {
-        vm.messages.forEach((item, i) => {
-          if (item.timestamp === timestamp) {
-            vm.messages.splice(i, 1)
-          }
-        })
-      }, 1500)
-    }
+    ...mapMutations('alertModules', ['removeMessage'])
   },
-  created () {
-    const vm = this
-    // 自定義名稱 'messsage:push'
-    // message: 傳入參數
-    // status: 樣式，預設值為 warning
-    vm.$bus.$on('message:push', (message, status = 'warning') => {
-      vm.updateMessage(message, status)
-    })
+  computed: {
+    ...mapGetters('alertModules', ['messages'])
   }
 }
 </script>

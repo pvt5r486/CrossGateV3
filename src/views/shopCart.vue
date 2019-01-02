@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div v-if="shopCart.carts && shopCart.carts.length != 0" class="container" style="min-height:calc(100vh - 85px - 213.88px - 66px)">
+    <div v-if="cart.carts && cart.carts.length != 0" class="container" style="min-height:calc(100vh - 85px - 213.88px - 66px)">
       <div class="row">
         <div class="col-md-8">
           <template v-if="!creatOrder">
             <h1 class="page_title my-4">購物車內容</h1>
               <keep-alive>
-                <shopCartList :list-data="shopCart" :loading-item="status.loadingItem" :status="status" @doit="delCartItem"></shopCartList>
+                <shopCartList :list-data="cart" :loading-item="status.loadingItem" :status="status" @doit="delCartItem"></shopCartList>
               </keep-alive>
           </template>
           <template v-else>
@@ -66,20 +66,20 @@
         <div class="col-md-4 mb-3">
           <div class="mt-4 p-3 bg-becare text-main">
             <h2 class="text-center  h3 border-bottom border-main mb-0 pb-2 font-weight-bold">訂單摘要</h2>
-            <ul class="mt-3 mb-0" v-if="shopCart.total > shopCart.final_total">
+            <ul class="mt-3 mb-0" v-if="cart.total > cart.final_total">
               <li class="d-flex justify-content-between align-items-center text-main">
                 <span>總計</span>
-                <del>{{shopCart.total | currency}}</del>
+                <del>{{cart.total | currency}}</del>
               </li>
               <li class="d-flex justify-content-between align-items-center h4 font-weight-bold my-1">
                 <span>優惠價</span>
-                <span class="text-danger">{{shopCart.final_total | currency}}</span>
+                <span class="text-danger">{{cart.final_total | currency}}</span>
               </li>
             </ul>
             <ul class="mt-3 mb-0" v-else>
               <li class="d-flex justify-content-between align-items-center h4 font-weight-bold">
                 <span>總計</span>
-                <span class="text-danger">{{shopCart.final_total | currency}}</span>
+                <span class="text-danger">{{cart.final_total | currency}}</span>
               </li>
             </ul>
             <div class="form-group my-3" v-if="!creatOrder">
@@ -114,13 +114,13 @@
 
 <script>
 import shopCartList from '@/components/shopCartList'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   components: {
     shopCartList
   },
   data () {
     return {
-      shopCart: {},
       status: {
         loadingItem: '',
         loadingIcon: false
@@ -139,25 +139,16 @@ export default {
     }
   },
   methods: {
-    getCart () {
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`
-      const vm = this
-      vm.$store.dispatch('updateLoading', true)
-      this.$http.get(api).then(response => {
-        vm.shopCart = response.data.data
-        vm.$store.dispatch('updateLoading', false)
-        vm.status.loadingItem = ''
-      })
-    },
     delCartItem (id, prodName) {
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart/${id}`
       const vm = this
       vm.status.loadingItem = id
-      this.$http.delete(api).then(response => {
-        vm.$bus.$emit('message:push', `${response.data.message}【${prodName}】`, 'success')
-        vm.$bus.$emit('shopCart:update')
-        vm.getCart()
-      })
+      vm.$store.dispatch('cartModules/delCartItem', { id, prodName })
+        .then(() => {
+          vm.status.loadingItem = ''
+        })
+        .catch(() => {
+          vm.status.loadingItem = ''
+        })
     },
     addCouponCode () {
       const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/coupon`
@@ -165,21 +156,21 @@ export default {
       const coupon = {
         code: vm.coupon_code
       }
-      this.$validator.validate().then((result) => {
+      vm.$validator.validate().then((result) => {
         if (result) {
           vm.status.loadingIcon = true
-          this.$http.post(api, { data: coupon }).then(response => {
+          vm.$http.post(api, { data: coupon }).then(response => {
             if (response.data.success) {
-              vm.$bus.$emit('message:push', `${response.data.message}`, 'success')
+              vm.$store.dispatch('alertModules/updateMessage', { message: `${response.data.message}`, status: 'success' }, { root: true })
             } else {
-              vm.$bus.$emit('message:push', `${response.data.message}`, 'danger')
+              vm.$store.dispatch('alertModules/updateMessage', { message: `${response.data.message}` }, { root: true })
             }
             vm.status.loadingIcon = false
             vm.coupon_code = ''
-            vm.getCart()
+            vm.$store.dispatch('cartModules/getCart')
           })
         } else {
-          vm.$bus.$emit('message:push', `優惠碼不可以空白哦`, 'danger')
+          vm.$store.dispatch('alertModules/updateMessage', { message: `優惠碼不可以空白哦` }, { root: true })
         }
       })
     },
@@ -192,24 +183,27 @@ export default {
           vm.$store.dispatch('updateLoading', true)
           this.$http.post(api, { data: order }).then(response => {
             if (response.data.success) {
-              vm.$bus.$emit('shopCart:update')
-              vm.$bus.$emit('message:push', `${response.data.message}`, 'success')
+              vm.$store.dispatch('cartModules/getCart')
+              vm.$store.dispatch('alertModules/updateMessage', { message: `${response.data.message}`, status: 'success' }, { root: true })
+              vm.$store.dispatch('updateLoading', false)
               vm.$router.push(`/orderCheckout/${response.data.orderId}`)
             } else {
-              vm.$bus.$emit('message:push', `${response.data.message}`, 'danger')
+              vm.$store.dispatch('alertModules/updateMessage', { message: `${response.data.message}` }, { root: true })
+              vm.$store.dispatch('updateLoading', false)
             }
-            vm.$store.dispatch('updateLoading', false)
-            vm.getCart()
           })
         } else {
-          vm.$bus.$emit('message:push', `噢！訂單內有欄位空白唷`, 'danger')
+          vm.$store.dispatch('alertModules/updateMessage', { message: `噢！訂單內有欄位空白唷` }, { root: true })
         }
       })
-    }
+    },
+    ...mapActions('cartModules', ['getCart'])
+  },
+  computed: {
+    ...mapGetters('cartModules', ['cart'])
   },
   created () {
-    const vm = this
-    vm.getCart()
+    this.getCart()
   }
 }
 </script>

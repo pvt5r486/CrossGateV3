@@ -11,8 +11,8 @@
         </router-link>
         <div class="shopcart-icon d-flex align-items-center order-md-1" :class="{'active':showSubMenu}" @click.prevent="showSubMenu = !showSubMenu">
           <i class="material-icons">shopping_cart</i>
-          <span class="badge badge-pill  badge-danger shopcart-icon-counter" v-if="shopCart.carts && shopCart.carts.length != 0">
-            {{shopCart.carts.length}}
+          <span class="badge badge-pill  badge-danger shopcart-icon-counter" v-if="cart.carts && cart.carts.length != 0">
+            {{cart.carts.length}}
           </span>
           <ul class="subMenu">
             <li>
@@ -43,11 +43,11 @@
 
 <script>
 import $ from 'jquery'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'navbarFront',
   data () {
     return {
-      shopCart: {},
       showSubMenu: false
     }
   },
@@ -55,20 +55,13 @@ export default {
     closeNavbar () {
       $('.collapse').collapse('hide')
     },
-    getCart () {
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`
-      const vm = this
-      this.$http.get(api).then(response => {
-        vm.shopCart = response.data.data
-      })
-    }
+    ...mapActions('cartModules', ['getCart'])
+  },
+  computed: {
+    ...mapGetters('cartModules', ['cart'])
   },
   created () {
-    const vm = this
-    vm.getCart()
-    vm.$bus.$on('shopCart:update', () => {
-      vm.getCart()
-    })
+    this.getCart()
   }
 }
 </script>

@@ -12,8 +12,8 @@
       </div>
       <span class="cartProdList-num">{{item.qty}} {{item.product.unit}}</span>
       <span class="cartProdList-price">{{item.product.price | currency}}</span>
-      <button type="button" class="ml-3 btn btn-outline-danger btn-sm" @click="doit(item.id,item.product.title)" :disabled="status.loadingItem != '' || status.loadingIcon">
-        <i class="fas fa-spinner fa-spin" v-if="status.loadingItem === item.id"></i>
+      <button type="button" class="ml-3 btn btn-outline-danger btn-sm" @click="doit(item.id,item.product.title)" :disabled="loadingItem != '' || loadingIcon">
+        <i class="fas fa-spinner fa-spin" v-if="loadingItem === item.id"></i>
         <i class="far fa-trash-alt" v-else></i>
       </button>
     </li>
@@ -30,11 +30,13 @@ export default {
         return {}
       }
     },
-    status: {
-      type: Object,
-      default: function () {
-        return {}
-      }
+    loadingItem: {
+      type: String,
+      default: ''
+    },
+    loadingIcon: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

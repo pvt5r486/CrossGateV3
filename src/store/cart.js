@@ -6,17 +6,25 @@ export default {
   state: {
     cart: {
       carts: []
-    }
+    },
+    loadingItem: ''
   },
   actions: {
     getCart (context) {
       const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`
       context.commit('LOADING', true, { root: true })
-      axios.get(api).then(response => {
-        if (response.data.data.carts) {
-          context.commit('CART', response.data.data)
-        }
-        context.commit('LOADING', false, { root: true })
+      return new Promise((resolve) => {
+        axios.get(api).then(response => {
+          if (response.data.data.carts) {
+            context.commit('CART', response.data.data)
+            context.commit('LOADINGITEM', '')
+            context.commit('LOADING', false, { root: true })
+            resolve()
+          } else {
+            context.commit('LOADINGITEM', '')
+            context.dispatch('alertModules/updateMessage', { message: `${response.data.message}` }, { root: true })
+          }
+        })
       })
     },
     addtoCart (context, { id, qty }) {
@@ -25,7 +33,7 @@ export default {
         product_id: id,
         qty
       }
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         axios.post(api, { data: cart }).then(response => {
           if (response.data.success) {
             context.dispatch('getCart')
@@ -36,14 +44,14 @@ export default {
           } else {
             context.dispatch('alertModules/updateMessage',
               { message: `【${response.data.data.product.title}】${response.data.data.qty} ${response.data.data.product.unit}${response.data.message}` }, { root: true })
-            reject(new Error(`執行失敗,原因:${response.data.message}`))
           }
         })
       })
     },
     delCartItem (context, { id, prodName }) {
+      context.commit('LOADINGITEM', id)
       const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart/${id}`
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         axios.delete(api).then(response => {
           if (response.data.success) {
             context.dispatch('alertModules/updateMessage', { message: `${response.data.message}【${prodName}】`, status: 'success' }, { root: true })
@@ -51,7 +59,6 @@ export default {
             resolve()
           } else {
             context.dispatch('alertModules/updateMessage', { message: `${response.data.message}【${prodName}】` }, { root: true })
-            reject(new Error(`執行失敗,原因:${response.data.message}`))
           }
         })
       })
@@ -60,11 +67,17 @@ export default {
   mutations: {
     CART (state, payload) {
       state.cart = payload
+    },
+    LOADINGITEM (state, payload) {
+      state.loadingItem = payload
     }
   },
   getters: {
     cart (state) {
       return state.cart
+    },
+    loadingItem (state) {
+      return state.loadingItem
     }
   }
 }

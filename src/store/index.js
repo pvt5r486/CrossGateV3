@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import alertModules from './alert'
 import cartModules from './cart'
 import productsModules from './products'
+import couponModules from './coupon'
+import ordersModules from './orders'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -32,6 +34,8 @@ export default new Vuex.Store({
   modules: {
     alertModules,
     cartModules,
-    productsModules
+    productsModules,
+    couponModules,
+    ordersModules
   }
 })

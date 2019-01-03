@@ -6,7 +6,7 @@
           <template v-if="!creatOrder">
             <h1 class="page_title my-4">購物車內容</h1>
               <keep-alive>
-                <shopCartList :list-data="cart" :loading-item="status.loadingItem" :status="status" @doit="delCartItem"></shopCartList>
+                <shopCartList :list-data="cart" :loading-item="loadingItem" :loading-icon="loadingIcon" @doit="delCartItem"></shopCartList>
               </keep-alive>
           </template>
           <template v-else>
@@ -87,8 +87,8 @@
                 <input type="text" class="form-control" id="coupontext" v-model.trim="coupon_code" placeholder="請輸入優惠碼" aria-label="請輸入優惠碼"
                   :class="{'is-invalid': errors.has('coupontext')}" name="coupontext" v-validate="'required'">
                 <div class="input-group-append">
-                  <button class="btn btn-main" type="button" @click="addCouponCode" :disabled="status.loadingIcon || status.loadingItem != ''" >
-                    <i class="fas fa-spinner fa-spin mr-1" v-if="status.loadingIcon"></i>套用優惠券
+                  <button class="btn btn-main" type="button" @click="addCouponCode" :disabled="loadingIcon || loadingItem != ''" >
+                    <i class="fas fa-spinner fa-spin mr-1" v-if="loadingIcon"></i>套用優惠券
                   </button>
                 </div>
               </div>
@@ -96,9 +96,9 @@
             </div>
           </div>
           <button class="btn btn-main btn-lg btn-block rounded-0"
-            :disabled="status.loadingIcon || status.loadingItem != ''" @click="creatOrder=true" v-if="!creatOrder">建立訂單</button>
+            :disabled="loadingIcon || loadingItem != ''" @click="creatOrder=true" v-if="!creatOrder">建立訂單</button>
           <button class="btn btn-main btn-lg btn-block rounded-0"
-            :disabled="status.loadingIcon || status.loadingItem != ''" @click="creatOrder=false" v-else>取消訂單</button>
+            :disabled="loadingIcon || loadingItem != ''" @click="creatOrder=false" v-else>取消訂單</button>
         </div>
       </div>
     </div>
@@ -121,10 +121,6 @@ export default {
   },
   data () {
     return {
-      status: {
-        loadingItem: '',
-        loadingIcon: false
-      },
       coupon_code: '',
       creatOrder: false,
       form: {
@@ -140,58 +136,30 @@ export default {
   },
   methods: {
     delCartItem (id, prodName) {
-      const vm = this
-      vm.status.loadingItem = id
-      vm.$store.dispatch('cartModules/delCartItem', { id, prodName })
-        .then(() => {
-          vm.status.loadingItem = ''
-        })
-        .catch(() => {
-          vm.status.loadingItem = ''
-        })
+      this.$store.dispatch('cartModules/delCartItem', { id, prodName })
     },
     addCouponCode () {
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/coupon`
       const vm = this
       const coupon = {
         code: vm.coupon_code
       }
       vm.$validator.validate().then((result) => {
         if (result) {
-          vm.status.loadingIcon = true
-          vm.$http.post(api, { data: coupon }).then(response => {
-            if (response.data.success) {
-              vm.$store.dispatch('alertModules/updateMessage', { message: `${response.data.message}`, status: 'success' }, { root: true })
-            } else {
-              vm.$store.dispatch('alertModules/updateMessage', { message: `${response.data.message}` }, { root: true })
-            }
-            vm.status.loadingIcon = false
-            vm.coupon_code = ''
-            vm.$store.dispatch('cartModules/getCart')
-          })
+          vm.$store.dispatch('couponModules/addCouponCode', coupon)
+            .then(() => {
+              vm.coupon_code = ''
+            })
         } else {
           vm.$store.dispatch('alertModules/updateMessage', { message: `優惠碼不可以空白哦` }, { root: true })
         }
       })
     },
     createdOrder () {
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/order`
       const vm = this
       const order = vm.form
       this.$validator.validate().then((result) => {
         if (result) {
-          vm.$store.dispatch('updateLoading', true)
-          this.$http.post(api, { data: order }).then(response => {
-            if (response.data.success) {
-              vm.$store.dispatch('cartModules/getCart')
-              vm.$store.dispatch('alertModules/updateMessage', { message: `${response.data.message}`, status: 'success' }, { root: true })
-              vm.$store.dispatch('updateLoading', false)
-              vm.$router.push(`/orderCheckout/${response.data.orderId}`)
-            } else {
-              vm.$store.dispatch('alertModules/updateMessage', { message: `${response.data.message}` }, { root: true })
-              vm.$store.dispatch('updateLoading', false)
-            }
-          })
+          this.$store.dispatch('ordersModules/createdOrder', order)
         } else {
           vm.$store.dispatch('alertModules/updateMessage', { message: `噢！訂單內有欄位空白唷` }, { root: true })
         }
@@ -200,7 +168,8 @@ export default {
     ...mapActions('cartModules', ['getCart'])
   },
   computed: {
-    ...mapGetters('cartModules', ['cart'])
+    ...mapGetters('cartModules', ['cart', 'loadingItem']),
+    ...mapGetters('couponModules', ['couponCode', 'loadingIcon'])
   },
   created () {
     this.getCart()

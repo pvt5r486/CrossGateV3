@@ -15,6 +15,7 @@ export default {
           if (response.data.success) {
             context.dispatch('alertModules/updateMessage', { message: `${response.data.message}`, status: 'success' }, { root: true })
             context.commit('loadingIcon', false)
+            // 這段註解下方的程式碼有問題 無法觸發 cartModules/getCart
             context.dispatch('cartModules/getCart', { root: true })
             resolve()
           } else {

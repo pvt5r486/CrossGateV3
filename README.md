@@ -1,4 +1,4 @@
-# CrossGate 商店 Vue Cli 3.0
+# CrossGate 商店 Vue Cli 3
 ![default](https://user-images.githubusercontent.com/41603487/50428050-a54c7200-08ee-11e9-8ac1-047a93fe2544.JPG)
 # Demo
 https://pvt5r486.github.io/CrossGateV3/dist/#/index
@@ -11,6 +11,7 @@ https://pvt5r486.github.io/CrossGateV3/dist/#/index
 * 後台:商品管理、客戶訂單管理、優惠券管理
 # 練習技術
 * Vue Cli 2.0 > 已升級至 Vue Cli 3.0
+* Vuex 狀態管理
 * Vue Router
 * Vue Component
 * 第三方 Vue 套件的運用
@@ -21,7 +22,7 @@ https://pvt5r486.github.io/CrossGateV3/dist/#/index
 * Webpack 概念
 * API的應用
 * Bootstrap 4 + 手刻 SCSS 的混合應用
->> 預計而尚未運用的技術 Vuex
+* 使用 ESlint 提升程式碼可讀性、品質(本次使用 Standard JS 規範)
 # 前台內容介紹
 ## loading
 全站皆使用的 loading 過場<br>

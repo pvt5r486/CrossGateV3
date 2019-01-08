@@ -197,6 +197,7 @@
 
 <script>
 import $ from 'jquery'
+import { mapGetters } from 'vuex'
 export default {
   props: {
     option: {
@@ -212,8 +213,6 @@ export default {
   },
   data () {
     return {
-      orders: [],
-      pagination: {},
       tempOrder: {
         user: {},
         products: {}
@@ -237,14 +236,7 @@ export default {
       $('#delOrderModal').modal('show')
     },
     getOrders (page = 1) {
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/orders?page=${page}`
-      const vm = this
-      vm.$store.dispatch('updateLoading', true)
-      this.$http.get(api).then(response => {
-        vm.orders = response.data.orders
-        vm.pagination = response.data.pagination
-        vm.$store.dispatch('updateLoading', false)
-      })
+      this.$store.dispatch('ordersModules/getOrders', page)
     },
     deleteOrder () {
       const vm = this
@@ -306,8 +298,7 @@ export default {
     }
   },
   created () {
-    const vm = this
-    vm.getOrders()
+    this.getOrders()
   },
   computed: {
     calcFinalTotal () {
@@ -327,7 +318,8 @@ export default {
         allFinalTotal = allFinalTotal + prodObj[prodID].final_total
       }
       return allFinalTotal
-    }
+    },
+    ...mapGetters('ordersModules', ['orders', 'pagination'])
   }
 }
 </script>

@@ -9,25 +9,24 @@ export default {
   actions: {
     addCouponCode (context, coupon) {
       const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/coupon`
-      context.commit('loadingIcon', true)
+      context.commit('LOADINGICON', true)
       return new Promise((resolve) => {
         axios.post(api, { data: coupon }).then(response => {
           if (response.data.success) {
             context.dispatch('alertModules/updateMessage', { message: `${response.data.message}`, status: 'success' }, { root: true })
-            context.commit('loadingIcon', false)
-            // 這段註解下方的程式碼有問題 無法觸發 cartModules/getCart
-            context.dispatch('cartModules/getCart', { root: true })
+            context.commit('LOADINGICON', false)
+            context.dispatch('cartModules/getCart', null, { root: true })
             resolve()
           } else {
             context.dispatch('alertModules/updateMessage', { message: `${response.data.message}` }, { root: true })
-            context.commit('loadingIcon', false)
+            context.commit('LOADINGICON', false)
           }
         })
       })
     }
   },
   mutations: {
-    loadingIcon (state, payload) {
+    LOADINGICON (state, payload) {
       state.loadingIcon = payload
     }
   },

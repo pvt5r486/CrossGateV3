@@ -114,53 +114,26 @@
 
 <script>
 import shopCartTable from '@/components/shopCartTable'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     shopCartTable
   },
   data () {
     return {
-      orderId: '',
-      order: {
-        user: {}
-      },
-      status: {
-        loadIcon: false
-      }
+      orderId: ''
     }
   },
   methods: {
     getOrder () {
-      const vm = this
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/order/${vm.orderId}`
-      vm.$store.dispatch('updateLoading', true)
-      this.$http.get(api).then(response => {
-        if (response.data.success && response.data.order) {
-          vm.order = response.data.order
-          vm.$store.dispatch('updateLoading', false)
-        } else {
-          vm.$store.dispatch('updateLoading', false)
-          vm.$store.dispatch('alertModules/updateMessage', { message: '糟糕...沒有這筆訂單喔！' }, { root: true })
-          vm.$router.push(`/shopping`)
-        }
-      })
+      this.$store.dispatch('ordersModules/getOrder', this.orderId)
     },
     payOrder () {
-      const vm = this
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/pay/${vm.orderId}`
-      vm.status.loadIcon = true
-      this.$http.post(api).then(response => {
-        if (response.data.success) {
-          if (response.data.success) {
-            vm.$store.dispatch('alertModules/updateMessage', { message: `${response.data.message}`, status: 'success' }, { root: true })
-            vm.getOrder()
-          } else {
-            vm.$store.dispatch('alertModules/updateMessage', { message: '付款失敗 :( ' }, { root: true })
-          }
-          vm.status.loadIcon = true
-        }
-      })
+      this.$store.dispatch('ordersModules/payOrder', this.orderId)
     }
+  },
+  computed: {
+    ...mapGetters('ordersModules', ['order', 'status'])
   },
   created () {
     this.orderId = this.$route.params.orderID

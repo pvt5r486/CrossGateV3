@@ -8,7 +8,7 @@ export default {
   actions: {
     updateMessage (context, { message, status = 'danger' }) {
       const timestamp = Math.floor(new Date() / 1000)
-      context.commit('pushMessage', {
+      context.commit('PUSHMESSAGE', {
         message,
         status,
         timestamp
@@ -19,17 +19,17 @@ export default {
       setTimeout(() => {
         context.state.messages.forEach((item, index) => {
           if (item.timestamp === timestamp) {
-            context.commit('removeMessage', index)
+            context.commit('REMOVEMESSAGE', index)
           }
         })
       }, 3000)
     }
   },
   mutations: {
-    pushMessage (state, message) {
+    PUSHMESSAGE (state, message) {
       state.messages.push(message)
     },
-    removeMessage (state, index) {
+    REMOVEMESSAGE (state, index) {
       state.messages.splice(index, 1)
     }
   },

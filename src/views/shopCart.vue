@@ -159,7 +159,7 @@ export default {
       const order = vm.form
       this.$validator.validate().then((result) => {
         if (result) {
-          this.$store.dispatch('ordersModules/createdOrder', order)
+          vm.$store.dispatch('ordersModules/createdOrder', order)
         } else {
           vm.$store.dispatch('alertModules/updateMessage', { message: `噢！訂單內有欄位空白唷` }, { root: true })
         }

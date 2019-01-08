@@ -35,6 +35,7 @@ export default {
   },
   methods: {
     changePage (page) {
+      window.scrollTo({ top: 0 })
       this.$emit('changepage', page)
     }
   }

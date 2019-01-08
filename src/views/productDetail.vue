@@ -78,6 +78,7 @@ export default {
       this.$store.dispatch('cartModules/addtoCart', { id, qty })
         .then(() => {
           vm.status.loadingIcon = false
+          vm.buyNum = 1
         })
         .catch(() => {
           vm.status.loadingIcon = false
